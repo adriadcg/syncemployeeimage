@@ -8,8 +8,7 @@ def config(filename="config.ini", section="postgresql"):
     parser.read(filename)
     config = {}
     if parser.has_section(section):
-        params = parser.items(section)
-        config = {p[0]: p[1] for p in params}
+        config = {p[0]: p[1] for p in parser.items(section)}
 
     return config
 
@@ -36,7 +35,6 @@ def move_files(files):
         paths = config(section="paths")
 
         general = config(section="general")
-        print(general["remote_mode"])
         if general["remote_mode"] == "yes":
             sftp = ssh.open_sftp()
             for f in files:
@@ -52,9 +50,7 @@ def move_files(files):
                 from_path = "{}/{}".format(paths["from"], f[1])
                 to_path = "{}/{}".format(paths["to"], f[0])
                 cmd = "yes | cp -f {} {}".format(from_path, to_path)
-                print(cmd)
                 stdin, stdout, error = ssh.exec_command(cmd)
-                # print(stdout.read())
                 print(error.read())
         ssh.close()
 
