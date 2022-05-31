@@ -2,6 +2,7 @@
 import psycopg2 
 import paramiko
 from configparser import ConfigParser
+import os
 
 def config(filename="config.ini", section="postgresql"):
     parser = ConfigParser()
@@ -35,11 +36,11 @@ def move_files(files):
         paths = config(section="paths")
 
         general = config(section="general")
-        if general["remote_mode"] == "yes":
+        if general["remote_mode"] == "no":
             sftp = ssh.open_sftp()
             for f in files:
                 from_path = "{}/{}".format(paths["from"], f[1])
-                to_path = "{}/{}".format(paths["local"], f[0])
+                to_path = os.path.join(paths["local"], str(f[0]))
                 try:
                     sftp.get(from_path, to_path)
                 except Exception as error:
